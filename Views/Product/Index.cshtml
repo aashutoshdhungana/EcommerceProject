@@ -1,0 +1,45 @@
+﻿@model IEnumerable<ECommerce.Application.Core.Entities.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Product List</h1>
+
+<p>
+    <button class="btn btn-dark">
+        <a asp-action="Create" class="text-light text-decoration-none">Add Products</a>
+    </button>
+</p>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        if (User != null && User.IsInRole("seller"))
+        {
+            if (item.UserId != User?.Identity?.Name)
+            {
+                continue;
+            }
+        }
+        <div class="col-md-3 mt-5">
+            <div>
+                <img alt="" src="@item.Image" height="200" width="200" />
+            </div>
+            <div>
+                Name: @item.ProductName
+            </div>
+            <div>
+                Price: Rs. @item.Price
+            </div>
+            <div>
+                Category: @item.Type
+            </div>
+            <div>
+                <a class="btn btn-dark" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a class="btn btn-dark" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </div>
+        </div>
+    }
+</div>
