@@ -6,12 +6,14 @@
 }
 
 <h1>Product List</h1>
-
+@if(User!= null && User.IsInRole("seller"))
+{
 <p>
     <button class="btn btn-dark">
         <a asp-action="Create" class="text-light text-decoration-none">Add Products</a>
     </button>
-</p>
+</p>   
+}
 <div class="row">
     @foreach (var item in Model)
     {
@@ -36,9 +38,12 @@
                 Category: @item.Type
             </div>
             <div>
-                <a class="btn btn-dark" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 <a class="btn btn-dark" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                @if(User!= null && User.IsInRole("seller"))
+                {
+                <a class="btn btn-dark" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
             </div>
         </div>
     }

@@ -64,8 +64,11 @@
             </div>
             <div class="mt-4">
                 <a class="btn btn-dark text-light text-decoration-none">Add To Cart</a>
-                <a class="btn btn-dark text-light text-decoration-none" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
                 <a class="btn btn-dark text-light text-decoration-none" asp-action="Index">Back to List</a>
+                @if(User!=null && User.IsInRole("seller"))
+                {
+                    <a class="btn btn-dark text-light text-decoration-none" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+                }
             </div>
         </div>
 
