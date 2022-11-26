@@ -5,40 +5,68 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>ViewCart</h1>
-<hr />
-<div class="text-center">
+<h1>Cart</h1>
 
-    @foreach (var item in Model)
-    {
-        <div class="w-50">
-            <div class="row">
-                <div class="fw-bold col-md-3">
-                    Order Id:
-                </div>
-                <div class="col-md">
-                    @item.Id
-                </div>
-            </div>
-            <div class="row">
-                <div class="fw-bold col-md-3">
-                    Product Name:
-                </div>
-                <div class="col-md">
-                    @item.Product.ProductName
-                </div>
-            </div>
-            <div class="row">
-                <div class="fw-bold col-md-3">
-                    Total Price: Rs
-                </div>
-                <div class="col-md">
-                    @item.TotalPrice
-                </div>
-            </div>
-        </div>
-        <div>
-            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-        </div>
-    }
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Order Id
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                Rs. @Html.DisplayFor(modelItem => item.TotalPrice)
+            </td>
+            <td>
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" value="@item.Id" name="Id">
+                    <button type="submit" class="btn btn-danger text-light" >Delete</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>Total:</td>
+            <td></td>
+            <td></td>
+            <td>Rs. @ViewData["totalPrice"]</td>
+            <td>
+                <form asp-action="CheckOut" method="post">
+                    <span class="text-danger">
+                    @Html.ValidationSummary()
+                    </span>
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-dark" >Check Out</button>
+                </form>
+            </td>
+        </tr>
+    </tfoot>
+</table>

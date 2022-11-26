@@ -63,10 +63,20 @@
                 </div>
             </div>
             <div class="mt-4">
-                <a class="btn btn-dark text-light text-decoration-none">Add To Cart</a>
-                <a class="btn btn-dark text-light text-decoration-none" asp-action="Index">Back to List</a>
+                @if (User!=null && User.IsInRole("buyer"))
+                {
+                <form asp-controller = "Order" asp-action="AddToCart">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary()
+                    <input type="hidden" name="productId" value="@Model.Id">
+                    <input type="number" min="1" max="@Model.Quantity" value="1" name="numberOfItems" />
+                    <button class="btn btn-dark text-light text-decoration-none" type="submit">Add To Cart</button>
+                    <a class="btn btn-dark text-light text-decoration-none" asp-action="Index">Back to List</a>
+                </form>
+                }
                 @if(User!=null && User.IsInRole("seller"))
                 {
+                    <a class="btn btn-dark text-light text-decoration-none" asp-action="Index">Back to List</a>
                     <a class="btn btn-dark text-light text-decoration-none" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
                 }
             </div>

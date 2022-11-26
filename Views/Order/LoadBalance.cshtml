@@ -1,0 +1,8 @@
+﻿<div class="pl-5">
+    <h3>Enter the amount you want to load</h3>
+    <form asp-action="LoadBalance" method="post">
+        <input name="amount" type="number" max="5000"/>
+        <button class="btn btn-success">Proceed</button>
+        <a class="btn btn-primary" asp-action="Index" asp-controller="Home">Cancel</a>
+    </form>
+</div>

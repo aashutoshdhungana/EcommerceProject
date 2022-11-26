@@ -19,10 +19,26 @@ namespace EcommerceMVC.Controllers
         }
 
         // GET: Product
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? category = null)
         {
             var appDbContext = _context.Product;
-            return View(await appDbContext.ToListAsync());
+            var categoryList = _context.Product.Select(p => p.Type).Distinct().ToList();
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (string categoryItem in categoryList)
+            {
+                list.Add(new SelectListItem()
+                {
+                    Text = categoryItem,
+                    Value = categoryItem
+                });
+            }
+            ViewData["categoryList"] = list;
+            var products = await appDbContext.ToListAsync();
+            if (!string.IsNullOrEmpty(category))
+            {
+                products = products.Where(p => p.Type == category).ToList();
+            }
+            return View(products);
         }
 
         // GET: Product/Details/5

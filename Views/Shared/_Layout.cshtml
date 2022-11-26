@@ -22,13 +22,16 @@
                     
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-end">
                         @if (User != null && User.Identity.IsAuthenticated)
-                        {                            
+                        {
                             <li>
-                               <div class="nav-link"> Balance: Rs <span id = "balance"></span> </div>
+                                <div class="nav-link"> Balance: Rs <span id = "balance"></span> </div>
                             </li>
-                            <li>
-                                <a class="nav-link text-dark" id = "LoadBal" href="#">Load Balance</a>
-                            </li>
+                            @if (User != null && User.IsInRole("buyer"))
+                            {
+                                <li>
+                                    <a class="nav-link text-dark" id = "LoadBal" asp-action="LoadBalance" asp-controller="Order">Load Balance</a>
+                                </li>
+                            }
                         }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -36,9 +39,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
                         </li>
-                        <li class="nav-item">
-                            <a><i class="fa fa-shopping-cart nav-link" style="font-size:24px"></i></a>
-                        </li>
+                        @if (User != null && User.IsInRole("buyer"))
+                        {
+                            <li class="nav-item">
+                                <a asp-action="ViewCart" asp-controller="Order"><i class="fa fa-shopping-cart nav-link" style="font-size:24px"></i></a>
+                            </li>
+                        }
+                        
                         @if(User?.Identity == null || !User.Identity.IsAuthenticated)
                         {
                         <li class="nav-item">
@@ -83,15 +90,6 @@
                 success: (resp) => {
                     $("#balance").html(resp.balance);
                 }
-            });
-            $('#LoadBal').click(() => {
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("LoadBalance", "Order")',
-                    success: (resp) => {
-                        $("#balance").html(resp.balance);
-                    }
-                });
             });
         });
         </script>

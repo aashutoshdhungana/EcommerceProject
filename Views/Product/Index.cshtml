@@ -5,7 +5,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Product List</h1>
+<div class="row">
+    <h1 class="col-md-8">Product List</h1>
+    <div class="col-md-4">
+        <form asp-action="Index" id="catForm">
+            <label>Category:</label>
+            @Html.DropDownList("category", @ViewData["categoryList"] as List<SelectListItem>, "-Select-", new {@onchange="selectChange();"})
+        </form> 
+    </div>
+</div>
 @if(User!= null && User.IsInRole("seller"))
 {
 <p>
@@ -48,3 +56,11 @@
         </div>
     }
 </div>
+@section Scripts {
+    <script>
+        function selectChange()
+        {
+            $('#catForm').submit();
+        }
+    </script>
+}

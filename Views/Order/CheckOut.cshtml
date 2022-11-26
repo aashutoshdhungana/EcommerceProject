@@ -1,0 +1,54 @@
+﻿@model IEnumerable<ECommerce.Application.Core.Entities.Order>
+
+@{
+    ViewData["Title"] = "CheckOut";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="text-center mt-5">
+<h3>Thank you for buying from us</h3>
+<h3>Your Product will be delivered soon</h3>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Order Id
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Stauts
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <tr>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Product.ProductName)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    Rs. @Html.DisplayFor(modelItem => item.TotalPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            </tr>
+        </tr>
+}
+    </tbody>
+</table>

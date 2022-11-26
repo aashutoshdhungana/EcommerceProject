@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceMVC.Controllers
 {
-    [Authorize(Roles = "buyer")]
     public class OrderController : Controller
     {
         private readonly AppDbContext _appContext;
@@ -24,25 +23,26 @@ namespace EcommerceMVC.Controllers
             return View();
         }
 
+        [Authorize(Roles = "buyer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddToCart(Guid productId, int numberOfItems)
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return RedirectToAction("Details","Product", new { Id = productId });
             }
             var product = _appContext.Product.Where(p => p.Id == productId).FirstOrDefault();
             if (product == null) 
             {
                 ModelState.AddModelError("Error", "Product not found");
-                return View();
+                return RedirectToAction("Details", "Product", new { Id = productId });
             }
 
             if (product.Quantity < numberOfItems)
             {
                 ModelState.AddModelError("Error", "Product not in stock");
-                return View();
+                return RedirectToAction("Details", "Product", new { Id = productId });
             }
 
             var userId = User.Identity.Name;
@@ -55,9 +55,12 @@ namespace EcommerceMVC.Controllers
                 UserId = userId,
                 Status = "pending"
             };
-            return RedirectToAction("Index", "Products");
+            _appContext.Order.Add(order);
+            _appContext.SaveChanges();
+            return RedirectToAction("ViewCart", "Order");
         }
 
+        [Authorize(Roles = "buyer")]
         [HttpGet]
         public IActionResult ViewCart()
         {
@@ -66,6 +69,9 @@ namespace EcommerceMVC.Controllers
             return View(orders);
         }
 
+        [Authorize(Roles = "buyer")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(Guid id)
         {
             if (id == null || _appContext.Order == null)
@@ -78,9 +84,13 @@ namespace EcommerceMVC.Controllers
                 return NotFound();
             }
             _appContext.Order.Remove(order);
-            return RedirectToAction("");
+            _appContext.SaveChanges();
+            return RedirectToAction("ViewCart", "Order");
         }
 
+        [HttpPost]
+        [Authorize(Roles = "buyer")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckOut()
         {
             List<Order> orders = _appContext.Order.Where(o => o.UserId == User.Identity.Name && o.Status == "pending").Include(o => o.Product).ToList();
@@ -89,26 +99,38 @@ namespace EcommerceMVC.Controllers
             if (totalPrice > user.Wallet)
             {
                 ModelState.AddModelError("Error", "Insufficient Balance");
-                return View();
+                return View("ViewCart", orders);
             }
             user.Wallet -= totalPrice;
             foreach (var item in orders)
             {
+                var seller = _userManager.Users.Where(x => x.Email == item.Product.UserId).FirstOrDefault();
+                seller.Wallet += item.TotalPrice;
+                await _userManager.UpdateAsync(seller);
                 item.Status = "Success";
                 _appContext.Order.Update(item);
             }
             _appContext.SaveChanges();
+            return View(orders);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "buyer")]
+        public IActionResult LoadBalance()
+        {
             return View();
         }
+        [HttpPost]
+        [Authorize(Roles = "buyer")]
 
-        public async Task<IActionResult> LoadBalance()
+        public async Task<IActionResult> LoadBalance(double amount)
         {
             var user = await _userManager.GetUserAsync(User);
-            user.Wallet += 10000;
+            user.Wallet += amount;
             await _userManager.UpdateAsync(user);
-            return Json(new { balance = user.Wallet });
+            return RedirectToAction("Index", "Home");
         }
-
+        [Authorize(Roles = "seller, buyer")]
         public async Task<IActionResult> GetBalance()
         {
             var user = await _userManager.GetUserAsync(User);
