@@ -10,21 +10,14 @@ namespace ECommerce.Application.Core.Entities
     public class Order: BaseEntity
     {
         [Required]
+        [ForeignKey("Product")]
         public Guid ProductId { get; set; }
-
+        public Product? Product { get; set; }
         [Required]
         public uint Quantity { get; set; }
-
-        [DataType(DataType.Currency)]
         [DisplayName("Total")]
         public double TotalPrice { get; set; }
-
-        [DisplayName("Status")]
-        public OrderStatus Status { get; set; }
-        public DateTime OrderPlacementTime { get; set; }
-        public DateTime DeliveryDate { get; set; }
-
-        [ForeignKey("User")]
-        public Guid UserId { get; set; }
+        public string? Status { get; set; }
+        public string? UserId { get; set; }
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EcommerceMVC</title>
+    <title>@ViewData["Title"] - Gada Electronics</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EcommerceMVC.styles.css" asp-append-version="true" />
@@ -19,7 +19,17 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-end">
+                        @if (User != null && User.Identity.IsAuthenticated)
+                        {                            
+                            <li>
+                               <div class="nav-link"> Balance: Rs <span id = "balance"></span> </div>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" id = "LoadBal" href="#">Load Balance</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -63,6 +73,29 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (User != null && User.Identity.IsAuthenticated)
+    {
+        <script>
+            $("document").ready(() => {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetBalance", "Order")',
+                success: (resp) => {
+                    $("#balance").html(resp.balance);
+                }
+            });
+            $('#LoadBal').click(() => {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadBalance", "Order")',
+                    success: (resp) => {
+                        $("#balance").html(resp.balance);
+                    }
+                });
+            });
+        });
+        </script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

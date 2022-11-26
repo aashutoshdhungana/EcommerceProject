@@ -131,6 +131,7 @@ namespace EcommerceMVC.Controllers
                 }
                 try
                 {
+                    product.UserId = User.Identity.Name;
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
